@@ -66,11 +66,12 @@ resource "azurerm_key_vault" "secrets" {
   rbac_authorization_enabled    = true
   soft_delete_retention_days    = 7
   purge_protection_enabled      = true
-  public_network_access_enabled = false
+  public_network_access_enabled = var.deployer_ip_address != "" ? true : false
 
   network_acls {
     bypass         = "AzureServices"
     default_action = "Deny"
+    ip_rules       = var.deployer_ip_address != "" ? [var.deployer_ip_address] : []
   }
 
   tags = var.tags
@@ -120,6 +121,7 @@ resource "azurerm_key_vault" "disk_encryption" {
   network_acls {
     bypass         = "AzureServices"
     default_action = "Deny"
+    ip_rules       = var.deployer_ip_address != "" ? [var.deployer_ip_address] : []
   }
 
   access_policy {
@@ -155,7 +157,7 @@ resource "azurerm_disk_encryption_set" "per_location" {
   location            = each.value
   resource_group_name = var.resource_group_name
   encryption_type     = "EncryptionAtRestWithCustomerKey"
-  key_vault_key_id    = azurerm_key_vault_key.disk_encryption[each.value].versionless_id
+  key_vault_key_id    = azurerm_key_vault_key.disk_encryption[each.value].id
 
   identity {
     type         = "UserAssigned"

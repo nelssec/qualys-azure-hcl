@@ -23,6 +23,7 @@ module "security" {
   deployer_object_id        = var.deployer_object_id
   qualys_subscription_token = var.qualys_subscription_token
   target_locations          = var.target_locations
+  deployer_ip_address       = var.deployer_ip_address
   tags                      = local.common_tags
 }
 

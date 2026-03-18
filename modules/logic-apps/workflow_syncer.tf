@@ -4,12 +4,8 @@ resource "azapi_resource" "function_app_syncer" {
   location  = var.location
   parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [var.logic_app_identity_id]
-  }
-
   body = {
+    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {

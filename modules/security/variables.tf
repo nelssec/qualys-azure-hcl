@@ -38,3 +38,9 @@ variable "tags" {
   description = "Resource tags"
   type        = map(string)
 }
+
+variable "deployer_ip_address" {
+  description = "Public IP address of the deployer to allow through Key Vault firewalls"
+  type        = string
+  default     = ""
+}

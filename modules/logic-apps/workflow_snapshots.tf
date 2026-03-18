@@ -4,12 +4,8 @@ resource "azapi_resource" "create_snapshots" {
   location  = var.location
   parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [var.logic_app_identity_id]
-  }
-
   body = {
+    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -285,12 +281,8 @@ resource "azapi_resource" "create_disks" {
   location  = var.location
   parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [var.logic_app_identity_id]
-  }
-
   body = {
+    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {

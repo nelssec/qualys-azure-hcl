@@ -15,12 +15,12 @@ locals {
 
   keyvault_connection_host = {
     connection = {
-      name = "@parameters('$$connections')['keyvault']['connectionId']"
+      name = "@parameters('$connections')['keyvault']['connectionId']"
     }
   }
 
   keyvault_connection_params = {
-    "$$connections" = {
+    "$connections" = {
       value = {
         keyvault = {
           connectionId   = azapi_resource.keyvault_connection.id
