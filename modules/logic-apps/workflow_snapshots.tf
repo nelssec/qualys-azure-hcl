@@ -108,12 +108,7 @@ resource "azapi_resource" "create_snapshots" {
                               type                = "EncryptionAtRestWithCustomerKey"
                               diskEncryptionSetId = "/subscriptions/${var.subscription_id}/resourceGroups/qualys-snapshot-scanner/providers/Microsoft.Compute/diskEncryptionSets/qualys-encryption-set-@{item()['location']}-${var.deployment_id}"
                             }
-                            tags = {
-                              App          = "qualys-snapshot-scanner"
-                              Name         = "Qualys Snapshot Scanner"
-                              ManagedByApp = "QualysSnapshotScanner"
-                              AppVersion   = var.app_version
-                            }
+                            tags = local.runtime_tags
                           }
                         ]
                       }
@@ -354,12 +349,7 @@ resource "azapi_resource" "create_disks" {
                           type                = "EncryptionAtRestWithCustomerKey"
                           diskEncryptionSetId = "/subscriptions/${var.subscription_id}/resourceGroups/qualys-snapshot-scanner/providers/Microsoft.Compute/diskEncryptionSets/qualys-encryption-set-@{triggerBody()['location']}-${var.deployment_id}"
                         }
-                        tags = {
-                          App          = "qualys-snapshot-scanner"
-                          Name         = "Qualys Snapshot Scanner"
-                          ManagedByApp = "QualysSnapshotScanner"
-                          AppVersion   = var.app_version
-                        }
+                        tags = local.runtime_tags
                       }
                     ]
                   }

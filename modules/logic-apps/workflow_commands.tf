@@ -402,12 +402,7 @@ resource "azapi_resource" "prepare_scanner" {
                     dnsSettings = {
                       domainNameLabel = "qualys-domain-@{toLower(variables('Id'))}"
                     }
-                    tags = {
-                      App          = "qualys-snapshot-scanner"
-                      Name         = "Qualys Snapshot Scanner"
-                      ManagedByApp = "QualysSnapshotScanner"
-                      AppVersion   = var.app_version
-                    }
+                    tags = local.runtime_tags
                   },
                 ]
               }
@@ -447,12 +442,7 @@ resource "azapi_resource" "prepare_scanner" {
                         }
                       }
                     ]
-                    tags = {
-                      App          = "qualys-snapshot-scanner"
-                      Name         = "Qualys Snapshot Scanner"
-                      ManagedByApp = "QualysSnapshotScanner"
-                      AppVersion   = var.app_version
-                    }
+                    tags = local.runtime_tags
                   },
                 ]
               }
@@ -526,12 +516,7 @@ resource "azapi_resource" "prepare_scanner" {
                         }
                       ]
                     }
-                    tags = {
-                      App          = "qualys-snapshot-scanner"
-                      Name         = "Qualys Snapshot Scanner"
-                      ManagedByApp = "QualysSnapshotScanner"
-                      AppVersion   = var.app_version
-                    }
+                    tags = local.runtime_tags
                   },
                 ]
               }

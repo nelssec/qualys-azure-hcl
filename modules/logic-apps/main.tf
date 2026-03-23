@@ -1,5 +1,12 @@
 locals {
-  workflow_prefix  = "qualys"
+  workflow_prefix = "qualys"
+
+  runtime_tags = merge({
+    App          = "qualys-snapshot-scanner"
+    Name         = "Qualys Snapshot Scanner"
+    ManagedByApp = "QualysSnapshotScanner"
+    AppVersion   = var.app_version
+  }, var.runtime_resource_tags)
   function_app_url = "https://${var.function_app_hostname}"
 
   storage_suffixes = {

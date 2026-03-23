@@ -102,3 +102,9 @@ variable "tags" {
   description = "Resource tags"
   type        = map(string)
 }
+
+variable "runtime_resource_tags" {
+  description = "Additional tags applied to runtime-created resources (scanner VMs, disks, snapshots, NICs, public IPs)"
+  type        = map(string)
+  default     = {}
+}
