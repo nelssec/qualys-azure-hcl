@@ -1,3 +1,7 @@
+data "http" "deployer_ip" {
+  url = "https://ifconfig.me/ip"
+}
+
 resource "random_string" "deployment_id" {
   count   = var.custom_deployment_id == "" ? 1 : 0
   length  = 5

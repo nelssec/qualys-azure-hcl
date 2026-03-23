@@ -23,7 +23,7 @@ module "security" {
   deployer_object_id        = data.azurerm_client_config.current.object_id
   qualys_subscription_token = var.qualys_subscription_token
   target_locations          = var.target_locations
-  deployer_ip_address       = var.deployer_ip_address
+  deployer_ip_address       = trimspace(data.http.deployer_ip.response_body)
   tags                      = local.common_tags
 }
 

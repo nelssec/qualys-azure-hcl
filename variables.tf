@@ -100,8 +100,3 @@ variable "role_boundary" {
   default     = ""
 }
 
-variable "deployer_ip_address" {
-  description = "Public IP of the deployer to allow through Key Vault firewalls during deployment"
-  type        = string
-  default     = ""
-}
