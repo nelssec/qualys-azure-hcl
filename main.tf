@@ -7,6 +7,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 module "roles" {
+  count  = var.create_roles ? 1 : 0
   source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/roles?ref=main"
 
   deployment_id = local.deployment_id

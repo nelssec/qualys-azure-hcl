@@ -16,3 +16,9 @@ custom_deployment_id      = ""
 role_boundary             = ""
 tags                      = {}
 runtime_resource_tags     = {}
+
+# Role configuration — set create_roles = false if roles were pre-created via setup/roles
+create_roles                    = true
+# existing_function_app_role_id     = ""
+# existing_logic_app_role_id        = ""
+# existing_target_scanner_role_id   = ""

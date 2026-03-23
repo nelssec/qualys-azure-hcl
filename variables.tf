@@ -106,3 +106,27 @@ variable "role_boundary" {
   default     = ""
 }
 
+variable "create_roles" {
+  description = "Create custom RBAC roles as part of this deployment. Set to false if roles were pre-created via setup/roles."
+  type        = bool
+  default     = true
+}
+
+variable "existing_function_app_role_id" {
+  description = "Pre-existing Function App custom role ID. Required when create_roles is false."
+  type        = string
+  default     = ""
+}
+
+variable "existing_logic_app_role_id" {
+  description = "Pre-existing Logic App custom role ID. Required when create_roles is false."
+  type        = string
+  default     = ""
+}
+
+variable "existing_target_scanner_role_id" {
+  description = "Pre-existing Target Scanner custom role ID. Required when create_roles is false."
+  type        = string
+  default     = ""
+}
+
