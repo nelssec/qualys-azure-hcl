@@ -40,11 +40,6 @@ variable "target_cloud" {
   }
 }
 
-variable "deployer_object_id" {
-  description = "Object ID of the deploying user or service principal"
-  type        = string
-}
-
 variable "debug_enabled" {
   description = "Enable Application Insights and extended logging"
   type        = bool

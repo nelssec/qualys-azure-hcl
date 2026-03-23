@@ -4,7 +4,6 @@ resource_group_name       = "qualys-scanner-rg"
 qualys_endpoint           = "https://gateway.qg1.apps.qualys.com"
 qualys_subscription_token = ""
 target_locations          = ["eastus"]
-deployer_object_id        = "00000000-0000-0000-0000-000000000000"
 target_cloud              = "AzureCloud"
 debug_enabled             = false
 event_based_discovery     = false
