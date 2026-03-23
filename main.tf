@@ -7,14 +7,14 @@ resource "azurerm_resource_group" "rg" {
 }
 
 module "roles" {
-  source = "./modules/roles"
+  source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/roles?ref=main"
 
   deployment_id = local.deployment_id
   role_boundary = local.role_boundary
 }
 
 module "security" {
-  source = "./modules/security"
+  source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/security?ref=main"
 
   resource_group_name       = azurerm_resource_group.rg.name
   location                  = var.location
@@ -28,7 +28,7 @@ module "security" {
 }
 
 module "networking" {
-  source = "./modules/networking"
+  source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/networking?ref=main"
 
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
@@ -39,7 +39,7 @@ module "networking" {
 }
 
 module "storage" {
-  source = "./modules/storage"
+  source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/storage?ref=main"
 
   resource_group_name           = azurerm_resource_group.rg.name
   location                      = var.location
@@ -52,7 +52,7 @@ module "storage" {
 }
 
 module "cosmos" {
-  source = "./modules/cosmos"
+  source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/cosmos?ref=main"
 
   resource_group_name           = azurerm_resource_group.rg.name
   location                      = var.location
@@ -65,7 +65,7 @@ module "cosmos" {
 }
 
 module "keyvault_pe" {
-  source = "./modules/keyvault-pe"
+  source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/keyvault-pe?ref=main"
 
   resource_group_name        = azurerm_resource_group.rg.name
   location                   = var.location
@@ -77,7 +77,7 @@ module "keyvault_pe" {
 }
 
 module "function_app" {
-  source = "./modules/function-app"
+  source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/function-app?ref=main"
 
   resource_group_name        = azurerm_resource_group.rg.name
   location                   = var.location
@@ -102,7 +102,7 @@ module "function_app" {
 }
 
 module "logic_apps" {
-  source = "./modules/logic-apps"
+  source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/logic-apps?ref=main"
 
   resource_group_name      = azurerm_resource_group.rg.name
   location                 = var.location
