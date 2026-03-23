@@ -113,6 +113,49 @@ export TF_VAR_qualys_subscription_token="your-token-here"
 terraform apply
 ```
 
+### Runtime Resource Tags
+
+Custom tags applied to all resources created at runtime by the scanning workflows (scanner VMs, disks, snapshots, NICs, public IPs):
+
+```hcl
+runtime_resource_tags = {
+  CostCenter  = "12345"
+  Environment = "Production"
+}
+```
+
+These are merged with required system tags (`App`, `Name`, `ManagedByApp`, `AppVersion`).
+
+## Pre-deploying Roles
+
+By default, the deployment creates 3 custom RBAC roles. This requires `Microsoft.Authorization/roleDefinitions/write` permissions. If your security team needs to create roles separately:
+
+**Step 1 — Security team deploys roles:**
+
+```bash
+cd setup/roles
+cp terraform.tfvars.example terraform.tfvars
+# Set subscription_id and deployment_id
+
+terraform init
+terraform plan
+terraform apply
+```
+
+Save the 3 role IDs from the output.
+
+**Step 2 — Infrastructure team deploys the scanner:**
+
+```hcl
+# terraform.tfvars
+create_roles                    = false
+existing_function_app_role_id   = "/subscriptions/.../roleDefinitions/..."
+existing_logic_app_role_id      = "/subscriptions/.../roleDefinitions/..."
+existing_target_scanner_role_id = "/subscriptions/.../roleDefinitions/..."
+```
+
+The `deployment_id` must match between both deployments. Use `custom_deployment_id` to set it explicitly.
+
 ## Modules
 
 | Module | Description |
