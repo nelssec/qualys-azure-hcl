@@ -6,8 +6,12 @@ resource "azapi_resource" "find_scan_candidates" {
 
   depends_on = [azapi_resource.concurrent_scanner]
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -189,8 +193,12 @@ resource "azapi_resource" "concurrent_scanner" {
 
   depends_on = [azapi_resource.prepare_scanner]
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {

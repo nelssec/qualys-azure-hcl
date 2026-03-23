@@ -6,8 +6,12 @@ resource "azapi_resource" "poll_based_discover" {
 
   depends_on = [azapi_resource.discover_resources]
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -155,8 +159,12 @@ resource "azapi_resource" "discover_resources" {
 
   depends_on = [azapi_resource.create_snapshots]
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -348,8 +356,12 @@ resource "azapi_resource" "event_based_discover" {
 
   depends_on = [azapi_resource.discover_resources, azapi_resource.create_snapshots]
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -508,8 +520,12 @@ resource "azapi_resource" "demand_based_discover" {
 
   depends_on = [azapi_resource.discover_resources, azapi_resource.create_snapshots]
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {

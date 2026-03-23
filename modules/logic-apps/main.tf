@@ -44,13 +44,6 @@ locals {
     }
   }
 
-  identity_block = {
-    type = "UserAssigned"
-    userAssignedIdentities = {
-      (var.logic_app_identity_id) = {}
-    }
-  }
-
   msi_auth = {
     identity = local.scanner_identity_resource_id
     type     = "ManagedServiceIdentity"

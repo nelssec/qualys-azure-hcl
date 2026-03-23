@@ -4,8 +4,12 @@ resource "azapi_resource" "delete_snapshots" {
   location  = var.location
   parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -172,8 +176,12 @@ resource "azapi_resource" "delete_disks" {
   location  = var.location
   parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -340,8 +348,12 @@ resource "azapi_resource" "delete_nics" {
   location  = var.location
   parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -467,8 +479,12 @@ resource "azapi_resource" "delete_public_ips" {
   location  = var.location
   parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -578,8 +594,12 @@ resource "azapi_resource" "delete_scanner_machines" {
   location  = var.location
   parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}"
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
@@ -757,8 +777,12 @@ resource "azapi_resource" "cleanup_resources" {
     azapi_resource.delete_public_ips,
   ]
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.logic_app_identity_id]
+  }
+
   body = {
-    identity = local.identity_block
     properties = {
       state = "Enabled"
       definition = {
