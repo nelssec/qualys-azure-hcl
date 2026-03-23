@@ -83,7 +83,13 @@ variable "app_version" {
 }
 
 variable "tags" {
-  description = "Additional resource tags"
+  description = "Additional resource tags applied to all infrastructure resources"
+  type        = map(string)
+  default     = {}
+}
+
+variable "runtime_resource_tags" {
+  description = "Additional tags applied to runtime-created resources (scanner VMs, disks, snapshots, NICs, public IPs)"
   type        = map(string)
   default     = {}
 }

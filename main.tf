@@ -124,4 +124,5 @@ module "logic_apps" {
   scanners_per_location    = var.scanners_per_location
   target_cloud             = var.target_cloud
   tags                     = local.common_tags
+  runtime_resource_tags    = var.runtime_resource_tags
 }
