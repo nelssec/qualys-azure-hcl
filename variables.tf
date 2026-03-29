@@ -106,6 +106,16 @@ variable "role_boundary" {
   default     = ""
 }
 
+variable "deployer_principal_type" {
+  description = "Principal type of the deployer identity. Use 'ServicePrincipal' for CI/CD pipelines (Brainboard, GitHub Actions, etc.) or 'User' for interactive az login."
+  type        = string
+  default     = "ServicePrincipal"
+  validation {
+    condition     = contains(["User", "ServicePrincipal"], var.deployer_principal_type)
+    error_message = "Must be one of: User, ServicePrincipal."
+  }
+}
+
 variable "create_roles" {
   description = "Create custom RBAC roles as part of this deployment. Set to false if roles were pre-created via setup/roles."
   type        = bool

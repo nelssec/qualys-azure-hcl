@@ -22,6 +22,7 @@ module "security" {
   deployment_id             = local.deployment_id
   tenant_id                 = data.azurerm_client_config.current.tenant_id
   deployer_object_id        = data.azurerm_client_config.current.object_id
+  deployer_principal_type    = var.deployer_principal_type
   qualys_subscription_token = var.qualys_subscription_token
   target_locations          = var.target_locations
   deployer_ip_address       = trimspace(data.http.deployer_ip.response_body)

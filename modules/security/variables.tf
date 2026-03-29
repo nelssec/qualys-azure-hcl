@@ -23,6 +23,12 @@ variable "deployer_object_id" {
   type        = string
 }
 
+variable "deployer_principal_type" {
+  description = "Principal type of the deployer identity (User or ServicePrincipal)"
+  type        = string
+  default     = "ServicePrincipal"
+}
+
 variable "qualys_subscription_token" {
   description = "Qualys subscription token"
   type        = string
