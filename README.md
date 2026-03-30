@@ -176,13 +176,12 @@ The `deployment_id` must match between both deployments. Use `custom_deployment_
 | `azurerm` | `~> 4.0` | Azure Resource Manager resources |
 | `azapi` | `~> 2.0` | Logic App workflow definitions |
 | `random` | `~> 3.5` | Deployment ID generation |
-| `http` | `~> 3.4` | Auto-detect deployer IP for Key Vault firewall |
 
 ## Security
 
 - **Managed identities** — no stored credentials for Azure service-to-service auth
 - **Private endpoints** — Cosmos DB, Key Vault, and Storage are not publicly accessible
-- **Key Vault firewalls** — default deny with deployer IP auto-whitelisted during deployment
+- **Key Vault access policies** — deployer, scanner, and logic app identities granted least-privilege access
 - **Customer-managed encryption** — per-region disk encryption key vaults with RSA-2048 keys
 - **Network isolation** — scanner VMs run in dedicated VNets with NSGs
 - **RBAC** — custom roles scoped to subscription or management group boundary
