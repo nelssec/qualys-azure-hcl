@@ -1,5 +1,10 @@
 data "azurerm_client_config" "current" {}
 
+data "azuread_service_principal" "deployer" {
+  count     = var.deployer_principal_type == "ServicePrincipal" ? 1 : 0
+  client_id = data.azurerm_client_config.current.client_id
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
@@ -21,7 +26,7 @@ module "security" {
   location                  = var.location
   deployment_id             = local.deployment_id
   tenant_id                 = data.azurerm_client_config.current.tenant_id
-  deployer_object_id        = data.azurerm_client_config.current.object_id
+  deployer_object_id        = local.deployer_object_id
   deployer_principal_type    = var.deployer_principal_type
   qualys_subscription_token = var.qualys_subscription_token
   target_locations          = var.target_locations
