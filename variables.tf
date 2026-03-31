@@ -79,7 +79,7 @@ variable "scanners_per_location" {
 variable "app_version" {
   description = "Application version"
   type        = string
-  default     = "3.20.0"
+  default     = "3.21.0-6"
 }
 
 variable "tags" {
@@ -128,5 +128,53 @@ variable "existing_target_scanner_role_id" {
   description = "Pre-existing Target Scanner custom role ID. Required when create_roles is false."
   type        = string
   default     = ""
+}
+
+variable "must_have_tags" {
+  description = "Tags that VMs must have to be scanned (comma-joined for function app)"
+  type        = list(string)
+  default     = []
+}
+
+variable "at_least_one_tag" {
+  description = "VMs must have at least one of these tags to be scanned"
+  type        = list(string)
+  default     = []
+}
+
+variable "none_tags" {
+  description = "VMs with any of these tags will be excluded from scanning"
+  type        = list(string)
+  default     = []
+}
+
+variable "scanner_pause_interval" {
+  description = "Pause interval in seconds between scanner operations"
+  type        = string
+  default     = "10"
+}
+
+variable "scan_sampling" {
+  description = "Enable scan sampling to scan a percentage of VMs per cycle"
+  type        = bool
+  default     = false
+}
+
+variable "sampling_group_scan_percentage" {
+  description = "Percentage of VMs to scan per cycle when sampling is enabled"
+  type        = string
+  default     = "10"
+}
+
+variable "vnet_address_prefix" {
+  description = "Address prefix for the service VNet"
+  type        = string
+  default     = "10.0.0.0/20"
+}
+
+variable "scanner_vnet_address_prefix" {
+  description = "Base address prefix for scanner VNets (each location gets a /16 subnet)"
+  type        = string
+  default     = "10.1.0.0/16"
 }
 

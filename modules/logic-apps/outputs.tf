@@ -29,5 +29,6 @@ output "workflow_names" {
     deletePublicIps          = azapi_resource.delete_public_ips.name
     deleteScannerMachines    = azapi_resource.delete_scanner_machines.name
     cleanupResources         = azapi_resource.cleanup_resources.name
+    uploadQscannerArtifacts  = azapi_resource.upload_qscanner_artifacts.name
   }
 }

@@ -58,6 +58,18 @@ locals {
   no_retry = {
     type = "none"
   }
+
+  arm_endpoint = "https://management.azure.com/"
+
+  function_app_name        = "qualys-snapshot-scanner-v3-${var.deployment_id}"
+  function_app_resource_id = "${local.arm_endpoint}subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/sites/${local.function_app_name}"
+
+  # For regional proxy function app operations
+  proxy_function_app_resource_id_prefix = "${local.arm_endpoint}subscriptions/${var.subscription_id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/sites/qualys-proxy-"
+
+  location_abbreviations = var.target_locations
+
+  app_syncer_logic_app_name = "${local.workflow_prefix}-app-syncer-${var.deployment_id}"
 }
 
 data "azurerm_managed_api" "keyvault" {

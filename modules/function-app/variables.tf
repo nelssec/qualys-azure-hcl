@@ -98,3 +98,68 @@ variable "tags" {
   description = "Resource tags"
   type        = map(string)
 }
+
+variable "must_have_tags" {
+  description = "Tags that VMs must have to be scanned"
+  type        = list(string)
+  default     = []
+}
+
+variable "at_least_one_tag" {
+  description = "VMs must have at least one of these tags to be scanned"
+  type        = list(string)
+  default     = []
+}
+
+variable "none_tags" {
+  description = "VMs with any of these tags will be excluded from scanning"
+  type        = list(string)
+  default     = []
+}
+
+variable "scanner_pause_interval" {
+  description = "Pause interval in seconds between scanner operations"
+  type        = string
+  default     = "10"
+}
+
+variable "scan_sampling" {
+  description = "Enable scan sampling"
+  type        = bool
+  default     = false
+}
+
+variable "sampling_group_scan_percentage" {
+  description = "Percentage of VMs to scan per cycle when sampling is enabled"
+  type        = string
+  default     = "10"
+}
+
+variable "target_locations" {
+  description = "Azure regions to scan VMs in"
+  type        = list(string)
+  default     = []
+}
+
+variable "tenant_id" {
+  description = "Azure AD tenant ID"
+  type        = string
+}
+
+variable "regional_function_app_subnet_ids" {
+  description = "Map of location to regional proxy function app subnet ID"
+  type        = map(string)
+  default     = {}
+}
+
+variable "regional_storage_account_names" {
+  description = "Map of location to regional storage account name"
+  type        = map(string)
+  default     = {}
+}
+
+variable "regional_artifact_container_names" {
+  description = "Map of location to regional artifact container name"
+  type        = map(string)
+  default     = {}
+}

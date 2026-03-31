@@ -17,3 +17,13 @@ output "app_insights_connection_string" {
   description = "Application Insights connection string (empty if debug disabled)"
   value       = var.debug_enabled ? azurerm_application_insights.main[0].connection_string : ""
 }
+
+output "regional_function_app_names" {
+  description = "Map of location to regional proxy function app name"
+  value       = { for loc, fa in azurerm_linux_function_app.regional : loc => fa.name }
+}
+
+output "regional_function_app_hostnames" {
+  description = "Map of location to regional proxy function app hostname"
+  value       = { for loc, fa in azurerm_linux_function_app.regional : loc => fa.default_hostname }
+}

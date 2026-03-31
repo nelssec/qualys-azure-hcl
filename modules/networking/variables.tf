@@ -27,3 +27,15 @@ variable "tags" {
   description = "Resource tags"
   type        = map(string)
 }
+
+variable "vnet_address_prefix" {
+  description = "Address prefix for the service VNet"
+  type        = string
+  default     = "10.0.0.0/20"
+}
+
+variable "scanner_vnet_address_prefix" {
+  description = "Base address prefix for scanner VNets (each location gets a /16 subnet)"
+  type        = string
+  default     = "10.1.0.0/16"
+}

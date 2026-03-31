@@ -39,3 +39,18 @@ output "service_bus_connection_string" {
   value       = azurerm_servicebus_namespace.main.default_primary_connection_string
   sensitive   = true
 }
+
+output "regional_storage_account_names" {
+  description = "Map of location to regional storage account name"
+  value       = { for loc, sa in azurerm_storage_account.regional : loc => sa.name }
+}
+
+output "regional_storage_account_ids" {
+  description = "Map of location to regional storage account ID"
+  value       = { for loc, sa in azurerm_storage_account.regional : loc => sa.id }
+}
+
+output "regional_artifact_container_names" {
+  description = "Map of location to regional artifact container name"
+  value       = { for loc, c in azurerm_storage_container.regional_artifact : loc => c.name }
+}

@@ -30,25 +30,29 @@ module "security" {
 module "networking" {
   source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/networking?ref=main"
 
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = var.location
-  deployment_id       = local.deployment_id
-  target_locations    = var.target_locations
-  target_cloud        = var.target_cloud
-  tags                = local.common_tags
+  resource_group_name         = azurerm_resource_group.rg.name
+  location                    = var.location
+  deployment_id               = local.deployment_id
+  target_locations            = var.target_locations
+  target_cloud                = var.target_cloud
+  vnet_address_prefix         = var.vnet_address_prefix
+  scanner_vnet_address_prefix = var.scanner_vnet_address_prefix
+  tags                        = local.common_tags
 }
 
 module "storage" {
   source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/storage?ref=main"
 
-  resource_group_name           = azurerm_resource_group.rg.name
-  location                      = var.location
-  deployment_id                 = local.deployment_id
-  scanner_identity_id           = module.security.scanner_identity_id
-  scanner_identity_principal_id = module.security.scanner_identity_principal_id
-  private_endpoint_subnet_id    = module.networking.private_endpoint_subnet_id
-  blob_dns_zone_id              = module.networking.blob_dns_zone_id
-  tags                          = local.common_tags
+  resource_group_name                 = azurerm_resource_group.rg.name
+  location                            = var.location
+  deployment_id                       = local.deployment_id
+  scanner_identity_id                 = module.security.scanner_identity_id
+  scanner_identity_principal_id       = module.security.scanner_identity_principal_id
+  private_endpoint_subnet_id          = module.networking.private_endpoint_subnet_id
+  blob_dns_zone_id                    = module.networking.blob_dns_zone_id
+  target_locations                    = var.target_locations
+  regional_private_storage_subnet_ids = module.networking.regional_private_storage_subnet_ids
+  tags                                = local.common_tags
 }
 
 module "cosmos" {
@@ -79,50 +83,66 @@ module "keyvault_pe" {
 module "function_app" {
   source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/function-app?ref=main"
 
-  resource_group_name        = azurerm_resource_group.rg.name
-  location                   = var.location
-  deployment_id              = local.deployment_id
-  subscription_id            = var.subscription_id
-  scanner_identity_id        = module.security.scanner_identity_id
-  scanner_identity_client_id = module.security.scanner_identity_client_id
-  function_app_subnet_id     = module.networking.function_app_subnet_id
-  storage_account_name       = module.storage.storage_account_name
-  storage_account_key        = module.storage.storage_account_key
-  cosmos_db_endpoint         = module.cosmos.cosmos_db_endpoint
-  cosmos_db_name             = module.cosmos.cosmos_db_database_name
-  key_vault_uri              = module.security.secrets_key_vault_uri
-  qualys_endpoint            = var.qualys_endpoint
-  debug_enabled              = var.debug_enabled
-  app_version                = var.app_version
-  scan_interval_hours        = var.scan_interval_hours
-  poll_interval_hours        = var.poll_interval_hours
-  location_concurrency       = var.location_concurrency
-  scanners_per_location      = var.scanners_per_location
-  tags                       = local.common_tags
+  resource_group_name               = azurerm_resource_group.rg.name
+  location                          = var.location
+  deployment_id                     = local.deployment_id
+  subscription_id                   = var.subscription_id
+  scanner_identity_id               = module.security.scanner_identity_id
+  scanner_identity_client_id        = module.security.scanner_identity_client_id
+  function_app_subnet_id            = module.networking.function_app_subnet_id
+  storage_account_name              = module.storage.storage_account_name
+  storage_account_key               = module.storage.storage_account_key
+  cosmos_db_endpoint                = module.cosmos.cosmos_db_endpoint
+  cosmos_db_name                    = module.cosmos.cosmos_db_database_name
+  key_vault_uri                     = module.security.secrets_key_vault_uri
+  qualys_endpoint                   = var.qualys_endpoint
+  debug_enabled                     = var.debug_enabled
+  app_version                       = var.app_version
+  scan_interval_hours               = var.scan_interval_hours
+  poll_interval_hours               = var.poll_interval_hours
+  location_concurrency              = var.location_concurrency
+  scanners_per_location             = var.scanners_per_location
+  must_have_tags                    = var.must_have_tags
+  at_least_one_tag                  = var.at_least_one_tag
+  none_tags                         = var.none_tags
+  scanner_pause_interval            = var.scanner_pause_interval
+  scan_sampling                     = var.scan_sampling
+  sampling_group_scan_percentage    = var.sampling_group_scan_percentage
+  target_locations                  = var.target_locations
+  tenant_id                         = data.azurerm_client_config.current.tenant_id
+  regional_function_app_subnet_ids  = module.networking.regional_function_app_subnet_ids
+  regional_storage_account_names    = module.storage.regional_storage_account_names
+  regional_artifact_container_names = module.storage.regional_artifact_container_names
+  tags                              = local.common_tags
 }
 
 module "logic_apps" {
   source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/logic-apps?ref=main"
 
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = var.location
-  deployment_id            = local.deployment_id
-  subscription_id          = var.subscription_id
-  tenant_id                = data.azurerm_client_config.current.tenant_id
-  logic_app_identity_id    = module.security.logic_app_identity_id
-  secrets_key_vault_name   = module.security.secrets_key_vault_name
-  qualys_token_secret_name = module.security.qualys_token_secret_name
-  qualys_endpoint          = var.qualys_endpoint
-  function_app_hostname    = module.function_app.function_app_hostname
-  storage_account_name     = module.storage.storage_account_name
-  storage_container_name   = module.storage.storage_container_name
-  event_based_discovery    = var.event_based_discovery
-  app_version              = var.app_version
-  poll_interval_hours      = var.poll_interval_hours
-  scan_interval_hours      = var.scan_interval_hours
-  location_concurrency     = var.location_concurrency
-  scanners_per_location    = var.scanners_per_location
-  target_cloud             = var.target_cloud
-  tags                     = local.common_tags
-  runtime_resource_tags    = var.runtime_resource_tags
+  resource_group_name               = azurerm_resource_group.rg.name
+  location                          = var.location
+  deployment_id                     = local.deployment_id
+  subscription_id                   = var.subscription_id
+  tenant_id                         = data.azurerm_client_config.current.tenant_id
+  logic_app_identity_id             = module.security.logic_app_identity_id
+  secrets_key_vault_name            = module.security.secrets_key_vault_name
+  qualys_token_secret_name          = module.security.qualys_token_secret_name
+  qualys_endpoint                   = var.qualys_endpoint
+  function_app_hostname             = module.function_app.function_app_hostname
+  storage_account_name              = module.storage.storage_account_name
+  storage_container_name            = module.storage.storage_container_name
+  event_based_discovery             = var.event_based_discovery
+  app_version                       = var.app_version
+  poll_interval_hours               = var.poll_interval_hours
+  scan_interval_hours               = var.scan_interval_hours
+  location_concurrency              = var.location_concurrency
+  scanners_per_location             = var.scanners_per_location
+  target_cloud                      = var.target_cloud
+  target_locations                  = var.target_locations
+  regional_storage_account_names    = module.storage.regional_storage_account_names
+  regional_artifact_container_names = module.storage.regional_artifact_container_names
+  regional_function_app_names       = module.function_app.regional_function_app_names
+  regional_function_app_hostnames   = module.function_app.regional_function_app_hostnames
+  tags                              = local.common_tags
+  runtime_resource_tags             = var.runtime_resource_tags
 }

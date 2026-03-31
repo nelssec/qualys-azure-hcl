@@ -47,3 +47,13 @@ output "servicebus_dns_zone_id" {
   description = "ID of the Service Bus private DNS zone"
   value       = azurerm_private_dns_zone.servicebus.id
 }
+
+output "regional_function_app_subnet_ids" {
+  description = "Map of location to regional proxy function app subnet ID"
+  value       = { for loc, subnet in azurerm_subnet.regional_function_app : loc => subnet.id }
+}
+
+output "regional_private_storage_subnet_ids" {
+  description = "Map of location to regional private storage subnet ID"
+  value       = { for loc, subnet in azurerm_subnet.regional_private_storage : loc => subnet.id }
+}

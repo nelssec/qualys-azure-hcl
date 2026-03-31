@@ -108,3 +108,33 @@ variable "runtime_resource_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "target_locations" {
+  description = "Azure regions to scan VMs in"
+  type        = list(string)
+  default     = []
+}
+
+variable "regional_storage_account_names" {
+  description = "Map of location to regional storage account name"
+  type        = map(string)
+  default     = {}
+}
+
+variable "regional_artifact_container_names" {
+  description = "Map of location to regional artifact container name"
+  type        = map(string)
+  default     = {}
+}
+
+variable "regional_function_app_names" {
+  description = "Map of location to regional proxy function app name"
+  type        = map(string)
+  default     = {}
+}
+
+variable "regional_function_app_hostnames" {
+  description = "Map of location to regional proxy function app hostname"
+  type        = map(string)
+  default     = {}
+}

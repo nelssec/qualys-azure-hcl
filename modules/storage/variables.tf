@@ -37,3 +37,15 @@ variable "tags" {
   description = "Resource tags"
   type        = map(string)
 }
+
+variable "target_locations" {
+  description = "Azure regions to scan VMs in"
+  type        = list(string)
+  default     = []
+}
+
+variable "regional_private_storage_subnet_ids" {
+  description = "Map of location to regional private storage subnet ID"
+  type        = map(string)
+  default     = {}
+}
