@@ -26,6 +26,17 @@ locals {
   dns = local.dns_suffixes[var.target_cloud]
 
   target_locations_indexed = { for idx, loc in var.target_locations : loc => idx }
+
+  create_service_vnet = var.existing_service_vnet_id == null
+
+  # Parse existing VNet ID to extract name and resource group for peering
+  existing_vnet_parts = var.existing_service_vnet_id != null ? split("/", var.existing_service_vnet_id) : []
+  existing_vnet_name  = length(local.existing_vnet_parts) > 8 ? local.existing_vnet_parts[8] : ""
+  existing_vnet_rg    = length(local.existing_vnet_parts) > 4 ? local.existing_vnet_parts[4] : ""
+
+  service_vnet_id   = local.create_service_vnet ? azurerm_virtual_network.service[0].id : var.existing_service_vnet_id
+  service_vnet_name = local.create_service_vnet ? azurerm_virtual_network.service[0].name : local.existing_vnet_name
+  service_vnet_rg   = local.create_service_vnet ? var.resource_group_name : local.existing_vnet_rg
 }
 
 resource "azurerm_network_security_group" "scanner" {
@@ -160,6 +171,8 @@ resource "azurerm_network_security_group" "private_storage" {
 }
 
 resource "azurerm_virtual_network" "service" {
+  count = local.create_service_vnet ? 1 : 0
+
   name                = "qualys-service-vnet-${var.deployment_id}"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -170,9 +183,11 @@ resource "azurerm_virtual_network" "service" {
 # Service VNet subnets use cidrsubnet from the parameterized prefix
 # Subnet 0: function-app (/24)
 resource "azurerm_subnet" "function_app" {
+  count = var.existing_function_app_subnet_id == null ? 1 : 0
+
   name                 = "function-app-subnet"
   resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.service.name
+  virtual_network_name = azurerm_virtual_network.service[0].name
   address_prefixes     = [cidrsubnet(var.vnet_address_prefix, 4, 0)]
 
   delegation {
@@ -184,20 +199,26 @@ resource "azurerm_subnet" "function_app" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "function_app" {
-  subnet_id                 = azurerm_subnet.function_app.id
+  count = var.existing_function_app_subnet_id == null ? 1 : 0
+
+  subnet_id                 = azurerm_subnet.function_app[0].id
   network_security_group_id = azurerm_network_security_group.service.id
 }
 
 # Subnet 1: private-endpoints (/24)
 resource "azurerm_subnet" "private_endpoints" {
+  count = var.existing_private_endpoint_subnet_id == null ? 1 : 0
+
   name                 = "private-endpoints-subnet"
   resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.service.name
+  virtual_network_name = azurerm_virtual_network.service[0].name
   address_prefixes     = [cidrsubnet(var.vnet_address_prefix, 4, 1)]
 }
 
 resource "azurerm_subnet_network_security_group_association" "private_endpoints" {
-  subnet_id                 = azurerm_subnet.private_endpoints.id
+  count = var.existing_private_endpoint_subnet_id == null ? 1 : 0
+
+  subnet_id                 = azurerm_subnet.private_endpoints[0].id
   network_security_group_id = azurerm_network_security_group.private_endpoints.id
 }
 
@@ -275,7 +296,7 @@ resource "azurerm_virtual_network_peering" "scanner_to_service" {
   name                         = "scanner-to-service-${each.key}"
   resource_group_name          = var.resource_group_name
   virtual_network_name         = azurerm_virtual_network.scanner[each.key].name
-  remote_virtual_network_id    = azurerm_virtual_network.service.id
+  remote_virtual_network_id    = local.service_vnet_id
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
 }
@@ -284,8 +305,8 @@ resource "azurerm_virtual_network_peering" "service_to_scanner" {
   for_each = local.target_locations_indexed
 
   name                         = "service-to-scanner-${each.key}"
-  resource_group_name          = var.resource_group_name
-  virtual_network_name         = azurerm_virtual_network.service.name
+  resource_group_name          = local.service_vnet_rg
+  virtual_network_name         = local.service_vnet_name
   remote_virtual_network_id    = azurerm_virtual_network.scanner[each.key].id
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
@@ -319,7 +340,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "keyvault" {
   name                  = "keyvault-link"
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.keyvault.name
-  virtual_network_id    = azurerm_virtual_network.service.id
+  virtual_network_id    = local.service_vnet_id
   registration_enabled  = false
   tags                  = var.tags
 }
@@ -328,7 +349,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "blob" {
   name                  = "blob-link"
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.blob.name
-  virtual_network_id    = azurerm_virtual_network.service.id
+  virtual_network_id    = local.service_vnet_id
   registration_enabled  = false
   tags                  = var.tags
 }
@@ -337,7 +358,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "cosmos" {
   name                  = "cosmos-link"
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.cosmos.name
-  virtual_network_id    = azurerm_virtual_network.service.id
+  virtual_network_id    = local.service_vnet_id
   registration_enabled  = false
   tags                  = var.tags
 }
@@ -346,7 +367,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "servicebus" {
   name                  = "servicebus-link"
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.servicebus.name
-  virtual_network_id    = azurerm_virtual_network.service.id
+  virtual_network_id    = local.service_vnet_id
   registration_enabled  = false
   tags                  = var.tags
 }

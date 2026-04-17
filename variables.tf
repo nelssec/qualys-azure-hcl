@@ -166,8 +166,26 @@ variable "sampling_group_scan_percentage" {
   default     = "10"
 }
 
+variable "existing_service_vnet_id" {
+  description = "Use an existing VNet for service resources. When set, existing_function_app_subnet_id and existing_private_endpoint_subnet_id must also be set."
+  type        = string
+  default     = null
+}
+
+variable "existing_function_app_subnet_id" {
+  description = "Use an existing subnet for the central function app (must have Microsoft.Web/serverFarms delegation)"
+  type        = string
+  default     = null
+}
+
+variable "existing_private_endpoint_subnet_id" {
+  description = "Use an existing subnet for private endpoints"
+  type        = string
+  default     = null
+}
+
 variable "vnet_address_prefix" {
-  description = "Address prefix for the service VNet"
+  description = "Address prefix for the service VNet (ignored when existing_service_vnet_id is set)"
   type        = string
   default     = "10.0.0.0/20"
 }

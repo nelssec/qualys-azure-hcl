@@ -30,14 +30,17 @@ module "security" {
 module "networking" {
   source = "git::https://github.com/nelssec/qualys-azure-hcl.git//modules/networking?ref=main"
 
-  resource_group_name         = azurerm_resource_group.rg.name
-  location                    = var.location
-  deployment_id               = local.deployment_id
-  target_locations            = var.target_locations
-  target_cloud                = var.target_cloud
-  vnet_address_prefix         = var.vnet_address_prefix
-  scanner_vnet_address_prefix = var.scanner_vnet_address_prefix
-  tags                        = local.common_tags
+  resource_group_name                 = azurerm_resource_group.rg.name
+  location                            = var.location
+  deployment_id                       = local.deployment_id
+  target_locations                    = var.target_locations
+  target_cloud                        = var.target_cloud
+  existing_service_vnet_id            = var.existing_service_vnet_id
+  existing_function_app_subnet_id     = var.existing_function_app_subnet_id
+  existing_private_endpoint_subnet_id = var.existing_private_endpoint_subnet_id
+  vnet_address_prefix                 = var.vnet_address_prefix
+  scanner_vnet_address_prefix         = var.scanner_vnet_address_prefix
+  tags                                = local.common_tags
 }
 
 module "storage" {

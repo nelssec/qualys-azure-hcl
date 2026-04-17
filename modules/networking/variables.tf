@@ -28,8 +28,26 @@ variable "tags" {
   type        = map(string)
 }
 
+variable "existing_service_vnet_id" {
+  description = "Use an existing VNet for service resources instead of creating one"
+  type        = string
+  default     = null
+}
+
+variable "existing_function_app_subnet_id" {
+  description = "Use an existing subnet for the central function app"
+  type        = string
+  default     = null
+}
+
+variable "existing_private_endpoint_subnet_id" {
+  description = "Use an existing subnet for private endpoints"
+  type        = string
+  default     = null
+}
+
 variable "vnet_address_prefix" {
-  description = "Address prefix for the service VNet"
+  description = "Address prefix for the service VNet (ignored when existing_service_vnet_id is set)"
   type        = string
   default     = "10.0.0.0/20"
 }

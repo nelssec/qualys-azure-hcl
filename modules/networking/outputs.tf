@@ -1,21 +1,21 @@
 output "service_vnet_id" {
   description = "ID of the service VNet"
-  value       = azurerm_virtual_network.service.id
+  value       = local.service_vnet_id
 }
 
 output "service_vnet_name" {
   description = "Name of the service VNet"
-  value       = azurerm_virtual_network.service.name
+  value       = local.service_vnet_name
 }
 
 output "function_app_subnet_id" {
   description = "ID of the function app subnet"
-  value       = azurerm_subnet.function_app.id
+  value       = var.existing_function_app_subnet_id != null ? var.existing_function_app_subnet_id : azurerm_subnet.function_app[0].id
 }
 
 output "private_endpoint_subnet_id" {
   description = "ID of the private endpoint subnet"
-  value       = azurerm_subnet.private_endpoints.id
+  value       = var.existing_private_endpoint_subnet_id != null ? var.existing_private_endpoint_subnet_id : azurerm_subnet.private_endpoints[0].id
 }
 
 output "scanner_vnet_ids" {
