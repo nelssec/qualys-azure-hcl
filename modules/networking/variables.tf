@@ -46,6 +46,30 @@ variable "existing_private_endpoint_subnet_id" {
   default     = null
 }
 
+variable "existing_scanner_vnet_ids" {
+  description = "Map of location to existing scanner VNet ID. When set, skips creating scanner VNets, peerings, and DNS links for those locations."
+  type        = map(string)
+  default     = {}
+}
+
+variable "existing_scanner_subnet_ids" {
+  description = "Map of location to existing scanner subnet ID"
+  type        = map(string)
+  default     = {}
+}
+
+variable "existing_regional_function_app_subnet_ids" {
+  description = "Map of location to existing proxy function app subnet ID (must be delegated to Microsoft.Web/serverFarms)"
+  type        = map(string)
+  default     = {}
+}
+
+variable "existing_regional_private_storage_subnet_ids" {
+  description = "Map of location to existing private storage subnet ID"
+  type        = map(string)
+  default     = {}
+}
+
 variable "vnet_address_prefix" {
   description = "Address prefix for the service VNet (ignored when existing_service_vnet_id is set)"
   type        = string
@@ -53,7 +77,7 @@ variable "vnet_address_prefix" {
 }
 
 variable "scanner_vnet_address_prefix" {
-  description = "Base address prefix for scanner VNets (each location gets a /16 subnet)"
+  description = "Base address prefix for scanner VNets (ignored when existing_scanner_vnet_ids is set)"
   type        = string
   default     = "10.1.0.0/16"
 }

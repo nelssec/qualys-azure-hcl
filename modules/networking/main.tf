@@ -37,9 +37,14 @@ locals {
   service_vnet_id   = local.create_service_vnet ? azurerm_virtual_network.service[0].id : var.existing_service_vnet_id
   service_vnet_name = local.create_service_vnet ? azurerm_virtual_network.service[0].name : local.existing_vnet_name
   service_vnet_rg   = local.create_service_vnet ? var.resource_group_name : local.existing_vnet_rg
+
+  create_scanner_vnets        = length(var.existing_scanner_vnet_ids) == 0
+  scanner_locations_to_create = local.create_scanner_vnets ? local.target_locations_indexed : {}
 }
 
 resource "azurerm_network_security_group" "scanner" {
+  count = local.create_scanner_vnets ? 1 : 0
+
   name                = "qualys-scanner-nsg-${var.deployment_id}"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -71,6 +76,8 @@ resource "azurerm_network_security_group" "scanner" {
 }
 
 resource "azurerm_network_security_group" "service" {
+  count = local.create_service_vnet ? 1 : 0
+
   name                = "qualys-service-nsg-${var.deployment_id}"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -90,6 +97,8 @@ resource "azurerm_network_security_group" "service" {
 }
 
 resource "azurerm_network_security_group" "private_endpoints" {
+  count = local.create_service_vnet ? 1 : 0
+
   name                = "qualys-pe-nsg-${var.deployment_id}"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -121,6 +130,8 @@ resource "azurerm_network_security_group" "private_endpoints" {
 }
 
 resource "azurerm_network_security_group" "proxy_function_app" {
+  count = local.create_scanner_vnets ? 1 : 0
+
   name                = "qualys-proxy-fa-nsg-${var.deployment_id}"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -140,6 +151,8 @@ resource "azurerm_network_security_group" "proxy_function_app" {
 }
 
 resource "azurerm_network_security_group" "private_storage" {
+  count = local.create_scanner_vnets ? 1 : 0
+
   name                = "qualys-private-storage-nsg-${var.deployment_id}"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -202,7 +215,7 @@ resource "azurerm_subnet_network_security_group_association" "function_app" {
   count = var.existing_function_app_subnet_id == null ? 1 : 0
 
   subnet_id                 = azurerm_subnet.function_app[0].id
-  network_security_group_id = azurerm_network_security_group.service.id
+  network_security_group_id = azurerm_network_security_group.service[0].id
 }
 
 # Subnet 1: private-endpoints (/24)
@@ -219,12 +232,12 @@ resource "azurerm_subnet_network_security_group_association" "private_endpoints"
   count = var.existing_private_endpoint_subnet_id == null ? 1 : 0
 
   subnet_id                 = azurerm_subnet.private_endpoints[0].id
-  network_security_group_id = azurerm_network_security_group.private_endpoints.id
+  network_security_group_id = azurerm_network_security_group.private_endpoints[0].id
 }
 
 # Per-location scanner VNets
 resource "azurerm_virtual_network" "scanner" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   name                = "qualys-scanner-vnet-${each.key}-${var.deployment_id}"
   location            = each.key
@@ -234,7 +247,7 @@ resource "azurerm_virtual_network" "scanner" {
 }
 
 resource "azurerm_subnet" "scanner" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   name                 = "scanner-subnet"
   resource_group_name  = var.resource_group_name
@@ -243,15 +256,15 @@ resource "azurerm_subnet" "scanner" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "scanner" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   subnet_id                 = azurerm_subnet.scanner[each.key].id
-  network_security_group_id = azurerm_network_security_group.scanner.id
+  network_security_group_id = azurerm_network_security_group.scanner[0].id
 }
 
 # Per-location function app subnets in scanner VNets
 resource "azurerm_subnet" "regional_function_app" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   name                 = "proxy-function-app-subnet"
   resource_group_name  = var.resource_group_name
@@ -267,15 +280,15 @@ resource "azurerm_subnet" "regional_function_app" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "regional_function_app" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   subnet_id                 = azurerm_subnet.regional_function_app[each.key].id
-  network_security_group_id = azurerm_network_security_group.proxy_function_app.id
+  network_security_group_id = azurerm_network_security_group.proxy_function_app[0].id
 }
 
 # Per-location private storage subnets in scanner VNets
 resource "azurerm_subnet" "regional_private_storage" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   name                 = "private-storage-subnet"
   resource_group_name  = var.resource_group_name
@@ -284,14 +297,14 @@ resource "azurerm_subnet" "regional_private_storage" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "regional_private_storage" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   subnet_id                 = azurerm_subnet.regional_private_storage[each.key].id
-  network_security_group_id = azurerm_network_security_group.private_storage.id
+  network_security_group_id = azurerm_network_security_group.private_storage[0].id
 }
 
 resource "azurerm_virtual_network_peering" "scanner_to_service" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   name                         = "scanner-to-service-${each.key}"
   resource_group_name          = var.resource_group_name
@@ -302,7 +315,7 @@ resource "azurerm_virtual_network_peering" "scanner_to_service" {
 }
 
 resource "azurerm_virtual_network_peering" "service_to_scanner" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   name                         = "service-to-scanner-${each.key}"
   resource_group_name          = local.service_vnet_rg
@@ -372,9 +385,9 @@ resource "azurerm_private_dns_zone_virtual_network_link" "servicebus" {
   tags                  = var.tags
 }
 
-# DNS zone links for regional scanner VNets
+# DNS zone links for regional scanner VNets (only when creating new scanner VNets)
 resource "azurerm_private_dns_zone_virtual_network_link" "keyvault_scanner" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   name                  = "keyvault-scanner-link-${each.key}"
   resource_group_name   = var.resource_group_name
@@ -385,7 +398,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "keyvault_scanner" {
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "blob_scanner" {
-  for_each = local.target_locations_indexed
+  for_each = local.scanner_locations_to_create
 
   name                  = "blob-scanner-link-${each.key}"
   resource_group_name   = var.resource_group_name

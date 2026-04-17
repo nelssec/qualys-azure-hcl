@@ -20,12 +20,12 @@ output "private_endpoint_subnet_id" {
 
 output "scanner_vnet_ids" {
   description = "Map of location to scanner VNet ID"
-  value       = { for loc, vnet in azurerm_virtual_network.scanner : loc => vnet.id }
+  value       = local.create_scanner_vnets ? { for loc, vnet in azurerm_virtual_network.scanner : loc => vnet.id } : var.existing_scanner_vnet_ids
 }
 
 output "scanner_subnet_ids" {
   description = "Map of location to scanner subnet ID"
-  value       = { for loc, subnet in azurerm_subnet.scanner : loc => subnet.id }
+  value       = local.create_scanner_vnets ? { for loc, subnet in azurerm_subnet.scanner : loc => subnet.id } : var.existing_scanner_subnet_ids
 }
 
 output "keyvault_dns_zone_id" {
@@ -50,10 +50,10 @@ output "servicebus_dns_zone_id" {
 
 output "regional_function_app_subnet_ids" {
   description = "Map of location to regional proxy function app subnet ID"
-  value       = { for loc, subnet in azurerm_subnet.regional_function_app : loc => subnet.id }
+  value       = local.create_scanner_vnets ? { for loc, subnet in azurerm_subnet.regional_function_app : loc => subnet.id } : var.existing_regional_function_app_subnet_ids
 }
 
 output "regional_private_storage_subnet_ids" {
   description = "Map of location to regional private storage subnet ID"
-  value       = { for loc, subnet in azurerm_subnet.regional_private_storage : loc => subnet.id }
+  value       = local.create_scanner_vnets ? { for loc, subnet in azurerm_subnet.regional_private_storage : loc => subnet.id } : var.existing_regional_private_storage_subnet_ids
 }
